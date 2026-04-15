@@ -103,25 +103,25 @@ export default function Index({ auth, tasks }) {
 
                             <div className="flex gap-2">
                                 {/* EDIT BUTTON */}
-                                <button
-                                    onClick={() => startEdit(task)}
-                                    className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition font-bold text-xs uppercase"
-                                >
-                                    Edit
-                                </button>
+<button
+    onClick={() => startEdit(task)}
+    className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 hover:shadow-md transition duration-200 font-bold text-xs uppercase"
+>
+    Edit
+</button>
 
-                                {/* DELETE BUTTON */}
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        if (confirm('Are you sure?')) {
-                                            router.delete(`/tasks/${task.id}`);
-                                        }
-                                    }}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-bold text-xs uppercase"
-                                >
-                                    Delete
-                                </button>
+{/* DELETE BUTTON */}
+<button
+    onClick={(e) => {
+        e.preventDefault();
+        if (confirm('Are you sure?')) {
+            router.delete(`/tasks/${task.id}`);
+        }
+    }}
+    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hover:brightness-110 transition duration-200 font-bold text-xs uppercase"
+>
+    Delete
+</button>
                             </div>
                         </div>
                     ))}
