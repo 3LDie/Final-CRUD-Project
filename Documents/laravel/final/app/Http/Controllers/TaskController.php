@@ -9,7 +9,7 @@ use Inertia\Inertia;
 class TaskController extends Controller
 {
     /**
-     * Display a listing of the tasks. (READ)
+     * Display a listing of the tasks.
      */
     public function index()
     {
