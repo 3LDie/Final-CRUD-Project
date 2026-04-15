@@ -1,7 +1,7 @@
 # Final CRUD Project
 Group Members:
-* Aquino Zaldy
-* AlebinCedrick
+* Aquino Jr., Zaldy C.
+* Dayrit, Czean Cedric Eiram
 
 **Features:**
 * Full CRUD (Create, Read, Update, Delete, Edit)
