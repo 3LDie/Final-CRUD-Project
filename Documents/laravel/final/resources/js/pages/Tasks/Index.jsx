@@ -1,9 +1,8 @@
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { Head, useForm, router } from '@inertiajs/react';
-import { useState } from 'react'; // Added useState
+import { useState, useEffect } from 'react'; // Added useEffect
 
 export default function Index({ auth, tasks }) {
-    // 1. State to track if we are editing a task
     const [editingTask, setEditingTask] = useState(null);
 
     const { data, setData, post, put, processing, reset, errors } = useForm({
@@ -11,33 +10,35 @@ export default function Index({ auth, tasks }) {
         description: '',
     });
 
-    // 2. Function to fill the form for editing
-    const startEdit = (task) => {
-        setEditingTask(task);
-        setData({
-            title: task.title,
-            description: task.description,
-        });
-    };
+    // EFFECT: This ensures the form updates whenever editingTask is set
+    useEffect(() => {
+        if (editingTask) {
+            setData({
+                title: editingTask.title,
+                description: editingTask.description,
+            });
+        }
+    }, [editingTask]);
 
-    // 3. Updated submit to handle both Create and Update
     const submit = (e) => {
         e.preventDefault();
         if (editingTask) {
-            // UPDATING existing task
+            // Logic for Update (PUT)
             put(`/tasks/${editingTask.id}`, {
                 onSuccess: () => {
-                    reset();
                     setEditingTask(null);
+                    reset();
                 },
             });
         } else {
-            // CREATING new task
-            post('/tasks', { onSuccess: () => reset() });
+            // Logic for Create (POST)
+            post('/tasks', { 
+                onSuccess: () => reset() 
+            });
         }
     };
 
-    const cancelEdit = () => {
+    const handleCancel = () => {
         setEditingTask(null);
         reset();
     };
@@ -46,85 +47,96 @@ export default function Index({ auth, tasks }) {
         <AppSidebarLayout user={auth.user}>
             <Head title="My Tasks" />
 
-            <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-                {/* CREATE/EDIT FORM */}
-                <form onSubmit={submit} className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                        {editingTask ? 'Edit Task' : 'Create New Task'}
-                    </h2>
+            <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4 sm:p-8">
+                <div className="max-w-3xl mx-auto">
                     
-                    <input
-                        value={data.title}
-                        placeholder="Task Title"
-                        className="block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-800"
-                        onChange={e => setData('title', e.target.value)}
-                    />
-                    {errors.title && <div className="text-red-500 text-sm mt-1">{errors.title}</div>}
-
-                    <textarea
-                        value={data.description}
-                        placeholder="Task Description (Optional)"
-                        className="block w-full mt-3 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900"
-                        onChange={e => setData('description', e.target.value)}
-                    ></textarea>
-
-                    <div className="flex gap-2">
-                        <button 
-                            className="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-25 transition"
-                            disabled={processing}
-                        >
-                            {editingTask ? 'Update' : 'Create'}
-                        </button>
-
-                        {editingTask && (
-                            <button 
-                                type="button"
-                                onClick={cancelEdit}
-                                className="mt-4 inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase"
-                            >
-                                Cancel
-                            </button>
-                        )}
+                    <div className="mb-8 text-center">
+                        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                            Task Manager Pro
+                        </h1>
+                        <p className="text-gray-500 mt-2">Manage your daily workflow with ease</p>
                     </div>
-                </form>
 
-                {/* READ LIST */}
-                <div className="mt-8 space-y-4">
-                    <h2 className="text-lg font-medium text-gray-400">Your Tasks</h2>
-                    {tasks.length === 0 && <p className="text-gray-500 italic">No tasks yet.</p>}
-                    
-                    {tasks.map(task => (
-                        <div key={task.id} className="bg-white p-6 rounded-lg shadow border border-gray-100 flex justify-between items-center">
+                    {/* FORM SECTION */}
+                    <form onSubmit={submit} className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white mb-10 transition-all">
+                        <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+                            <span className="w-2 h-6 bg-indigo-500 rounded-full"></span>
+                            {editingTask ? 'Editing Mode' : 'New Task'}
+                        </h2>
+                        
+                        <div className="space-y-4">
                             <div>
-                                <h3 className="text-lg font-bold text-indigo-700">{task.title}</h3>
-                                <p className="text-gray-600 mt-1">{task.description || "No description provided."}</p>
-                                <span className="text-xs text-gray-400">Created: {new Date(task.created_at).toLocaleDateString()}</span>
+                                <input
+                                    value={data.title}
+                                    placeholder="What needs to be done?"
+                                    className="block w-full border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 p-3 transition-all"
+                                    onChange={e => setData('title', e.target.value)}
+                                    required
+                                />
+                                {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
                             </div>
 
-                            <div className="flex gap-2">
-                                {/* EDIT BUTTON */}
-<button
-    onClick={() => startEdit(task)}
-    className="px-4 py-2 bg-amber-500 text-white rounded-md font-bold text-xs uppercase transition-all duration-200 hover:bg-amber-600 hover:shadow-lg active:scale-95"
->
-    Edit
-</button>
-
-{/* DELETE BUTTON */}
-<button
-    onClick={(e) => {
-        e.preventDefault();
-        if (confirm('Are you sure?')) {
-            router.delete(`/tasks/${task.id}`);
-        }
-    }}
-    className="px-4 py-2 bg-red-600 text-white rounded-md font-bold text-xs uppercase transition-all duration-200 hover:bg-red-700 hover:shadow-lg active:scale-95"
->
-    Delete
-</button>
-                            </div>
+                            <textarea
+                                value={data.description}
+                                placeholder="Add some details..."
+                                className="block w-full border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 p-3 min-h-[100px]"
+                                onChange={e => setData('description', e.target.value)}
+                            ></textarea>
                         </div>
-                    ))}
+
+                        <div className="flex gap-3 mt-6">
+                            <button 
+                                className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-wider hover:bg-indigo-700 hover:shadow-lg active:scale-[0.98] transition-all disabled:opacity-50"
+                                disabled={processing}
+                            >
+                                {editingTask ? 'Update Task' : 'Save Task'}
+                            </button>
+
+                            {editingTask && (
+                                <button 
+                                    type="button"
+                                    onClick={handleCancel}
+                                    className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold uppercase hover:bg-gray-200 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
+                    </form>
+
+                    {/* LIST SECTION */}
+                    <div className="space-y-4">
+                        <div className="flex justify-between px-2">
+                            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">Your Tasks ({tasks.length})</h3>
+                        </div>
+
+                        {tasks.map(task => (
+                            <div key={task.id} className="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center hover:shadow-md hover:border-indigo-200 transition-all duration-300">
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">{task.title}</h3>
+                                    <p className="text-gray-500 mt-1 text-sm">{task.description || "No details provided."}</p>
+                                </div>
+
+                                <div className="flex gap-4 ml-4">
+                                    <button
+                                        onClick={() => {
+                                            setEditingTask(task);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        className="text-amber-500 font-bold text-xs uppercase hover:underline"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => confirm('Delete this task?') && router.delete(`/tasks/${task.id}`)}
+                                        className="text-red-500 font-bold text-xs uppercase hover:underline"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </AppSidebarLayout>
