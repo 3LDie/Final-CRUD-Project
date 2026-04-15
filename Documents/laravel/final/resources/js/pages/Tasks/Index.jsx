@@ -56,7 +56,7 @@ export default function Index({ auth, tasks }) {
                     <input
                         value={data.title}
                         placeholder="Task Title"
-                        className="block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900"
+                        className="block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-800"
                         onChange={e => setData('title', e.target.value)}
                     />
                     {errors.title && <div className="text-red-500 text-sm mt-1">{errors.title}</div>}
