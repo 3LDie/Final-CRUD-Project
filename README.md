@@ -1,6 +1,6 @@
 # Final CRUD Project
 Group Members:
-* Aquino Zaldy
+* Aquino Jr., Zaldy C.
 * Dayrit, Czean Cedric Eiram
 
 **Features:**
