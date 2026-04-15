@@ -105,7 +105,7 @@ export default function Index({ auth, tasks }) {
                                 {/* EDIT BUTTON */}
 <button
     onClick={() => startEdit(task)}
-    className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 hover:shadow-md transition duration-200 font-bold text-xs uppercase"
+    className="px-4 py-2 bg-amber-500 text-white rounded-md font-bold text-xs uppercase transition-all duration-200 hover:bg-amber-600 hover:shadow-lg active:scale-95"
 >
     Edit
 </button>
@@ -118,7 +118,7 @@ export default function Index({ auth, tasks }) {
             router.delete(`/tasks/${task.id}`);
         }
     }}
-    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hover:brightness-110 transition duration-200 font-bold text-xs uppercase"
+    className="px-4 py-2 bg-red-600 text-white rounded-md font-bold text-xs uppercase transition-all duration-200 hover:bg-red-700 hover:shadow-lg active:scale-95"
 >
     Delete
 </button>
